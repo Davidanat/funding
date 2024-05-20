@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"funding/auth"
 	"funding/helper"
 	"funding/user"
 	"net/http"
@@ -11,10 +12,11 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
@@ -37,9 +39,14 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// token, err :=h.jwtService.GenerateToken()
+	token, err := h.authService.GenerateToken(newUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "Error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 
-	formatter := user.FormatUser(newUser, "365238rfhwoiqfhwety43yt03ut0ewwfw")
+	formatter := user.FormatUser(newUser, token)
 
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "Success", formatter)
 
@@ -68,7 +75,14 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	formatter := user.FormatUser(userLogin, "tokentokentokentokentoken")
+	token, err := h.authService.GenerateToken(userLogin.ID)
+	if err != nil {
+		response := helper.APIResponse("Login failed", http.StatusUnprocessableEntity, "Error", nil)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := user.FormatUser(userLogin, token)
 
 	response := helper.APIResponse("Successfuly Login", http.StatusOK, "Success", formatter)
 	c.JSON(http.StatusOK, response)
