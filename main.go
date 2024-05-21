@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"funding/auth"
+	"funding/campaign"
 	"funding/handler"
 	"funding/helper"
 	"funding/user"
@@ -24,6 +26,19 @@ func main() {
 	}
 
 	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+	campaigns, err := campaignRepository.FindbyUser(1)
+	if err != nil {
+		return
+	}
+	fmt.Println(len(campaigns))
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+		if len(campaign.CampaignImages) > 0 {
+			fmt.Println(campaign.CampaignImages[0].FileName)
+		}
+	}
+
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 
