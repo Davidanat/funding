@@ -66,7 +66,7 @@ type CampaignUserFormatter struct {
 
 type CampaignImageFormatter struct {
 	ImageURL  string `json:"image_url"`
-	IsPrimary bool   `json:"is_primary"`
+	IsPrimary int    `json:"is_primary"`
 }
 
 func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
