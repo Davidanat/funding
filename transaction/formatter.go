@@ -2,15 +2,15 @@ package transaction
 
 import "time"
 
-type TransactionFormatter struct {
+type CampaignTransactionFormatter struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
 	Amount    int       `json:"amount"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func FormatTransaction(transaction Transaction) TransactionFormatter {
-	formatter := TransactionFormatter{
+func FormatCampaignTransaction(transaction Transaction) CampaignTransactionFormatter {
+	formatter := CampaignTransactionFormatter{
 		ID:        transaction.ID,
 		Name:      transaction.User.Name,
 		Amount:    transaction.Amount,
@@ -19,15 +19,15 @@ func FormatTransaction(transaction Transaction) TransactionFormatter {
 	return formatter
 }
 
-func FormatTransactions(transactions []Transaction) []TransactionFormatter {
+func FormatCampaignTransactions(transactions []Transaction) []CampaignTransactionFormatter {
 	if len(transactions) == 0 {
-		return []TransactionFormatter{}
+		return []CampaignTransactionFormatter{}
 	}
 
-	var transactionsFormatter []TransactionFormatter
+	var transactionsFormatter []CampaignTransactionFormatter
 
 	for _, transactions := range transactions {
-		formatter := FormatTransaction(transactions)
+		formatter := FormatCampaignTransaction(transactions)
 		transactionsFormatter = append(transactionsFormatter, formatter)
 	}
 
@@ -81,4 +81,27 @@ func FormatUserTransactions(transactions []Transaction) []UserTransactionFormatt
 	}
 
 	return transactionsFormatter
+}
+
+type TransactionFormatter struct {
+	ID         int    `json:"id"`
+	CampaignID int    `json:"campaign_id"`
+	UserID     int    `json:"user_id"`
+	Amount     int    `json:"amount"`
+	Status     string `json:"status"`
+	Code       string `json:"code"`
+	PaymentURL string `json:"payment_url"`
+}
+
+func FormatTransaction(transaction Transaction) TransactionFormatter {
+	formatter := TransactionFormatter{
+		ID:         transaction.ID,
+		CampaignID: transaction.CampaignID,
+		UserID:     transaction.UserID,
+		Amount:     transaction.Amount,
+		Status:     transaction.Status,
+		Code:       transaction.Code,
+		PaymentURL: transaction.PaymentURL,
+	}
+	return formatter
 }

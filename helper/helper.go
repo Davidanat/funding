@@ -2,6 +2,7 @@ package helper
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -39,4 +40,14 @@ func FormatValidationError(err error) []string {
 		errors = append(errors, erro)
 	}
 	return errors
+}
+
+func RandomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
 }
