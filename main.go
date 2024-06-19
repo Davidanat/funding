@@ -26,9 +26,13 @@ func init() {
 }
 
 func main() {
-	// dsn := "root:@tcp(127.0.0.1:3306)/funding?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := os.Getenv("DB_DSN")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	db.AutoMigrate(user.User{})
+	db.AutoMigrate(campaign.Campaign{})
+	db.AutoMigrate(campaign.CampaignImage{})
+	db.AutoMigrate(transaction.Transaction{})
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -54,6 +58,8 @@ func main() {
 	router.Use(cors.Default())
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	router.SetTrustedProxies([]string{"192.168.1.2"})
+
 	router.Static("/images", "./images")
 	api := router.Group("/api/v1/")
 	api.POST("/users", userHandler.RegisterUser)
